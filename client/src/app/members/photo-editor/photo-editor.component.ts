@@ -11,7 +11,7 @@ import { environment } from 'src/environments/environment';
 @Component({
   selector: 'app-photo-editor',
   templateUrl: './photo-editor.component.html',
-  styleUrls: ['./photo-editor.component.css']
+  styleUrls: ['./photo-editor.component.css'],
 })
 export class PhotoEditorComponent implements OnInit {
   @Input() member: Member;
@@ -19,9 +19,14 @@ export class PhotoEditorComponent implements OnInit {
   hasBaseDropZoneOver = false;
   baseUrl = environment.apiUrl;
   user: User;
-  constructor(private accountServie: AccountService, private memberService: MembersService) {
-    this.accountServie.currentUser$.pipe(take(1)).subscribe(user => this.user = user);
-   }
+  constructor(
+    private accountServie: AccountService,
+    private memberService: MembersService
+  ) {
+    this.accountServie.currentUser$
+      .pipe(take(1))
+      .subscribe((user) => (this.user = user));
+  }
 
   ngOnInit(): void {
     this.initializeUploader();
@@ -39,7 +44,7 @@ export class PhotoEditorComponent implements OnInit {
       allowedFileType: ['image'],
       removeAfterUpload: true,
       autoUpload: false,
-      maxFileSize: 10 * 1024 * 1024
+      maxFileSize: 10 * 1024 * 1024,
     });
 
     this.uploader.onAfterAddingFile = (file) => {
@@ -48,36 +53,38 @@ export class PhotoEditorComponent implements OnInit {
 
     this.uploader.onSuccessItem = (item, response, status, headers) => {
       if (response) {
-        const photo = JSON.parse(response);
+        const photo: Photo = JSON.parse(response);
         this.member.photos.push(photo);
+
+        if (photo.isMain) {
+          this.user.photoUrl = photo.url;
+          this.member.photoUrl = photo.url;
+          this.accountServie.setCurrentUser(this.user);
+        }
       }
     };
   }
 
   setMainPhoto(photo: Photo) {
-    this.memberService.setMainPhoto(photo.id)
-    .subscribe(() => {
+    this.memberService.setMainPhoto(photo.id).subscribe(() => {
       this.user.photoUrl = photo.url;
       this.accountServie.setCurrentUser(this.user);
       this.member.photoUrl = photo.url;
 
-      this.member.photos.forEach(p => {
-
+      this.member.photos.forEach((p) => {
         if (p.isMain) {
           p.isMain = false;
         }
         if (p.id === photo.id) {
           p.isMain = true;
         }
-      })
+      });
     });
   }
 
   deletePhoto(photoId: number) {
-    this.memberService.deletePhoto(photoId)
-    .subscribe(() => {
-      this.member.photos = this.member.photos.filter(p => p.id !== photoId);
+    this.memberService.deletePhoto(photoId).subscribe(() => {
+      this.member.photos = this.member.photos.filter((p) => p.id !== photoId);
     });
   }
-
 }
