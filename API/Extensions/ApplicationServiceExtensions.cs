@@ -1,6 +1,7 @@
 ﻿using API.Data;
 using API.Helpers;
 using API.Services;
+using API.SignalR;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -24,6 +25,7 @@ namespace API.Extensions
             serviceCollection.AddScoped<ILikesRepository, LikesRepository>();
             serviceCollection.AddScoped<IMessageRepository, MessageRepository>();
             serviceCollection.AddScoped<LogUserActivity>();
+            serviceCollection.AddSingleton<PresenceTracker>();
 
             serviceCollection.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
             serviceCollection.Configure<CloudinarySettings>(configuration.GetSection("CloudinarySettings"));
