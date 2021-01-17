@@ -20,10 +20,8 @@ namespace API.Extensions
             });
 
             serviceCollection.AddScoped<ITokenService, TokenService>();
-            serviceCollection.AddScoped<IUserRepository, UserRepository>();
             serviceCollection.AddScoped<IPhotoService, PhotoService>();
-            serviceCollection.AddScoped<ILikesRepository, LikesRepository>();
-            serviceCollection.AddScoped<IMessageRepository, MessageRepository>();
+            serviceCollection.AddScoped<IUnitOfWork, UnitOfWork>();
             serviceCollection.AddScoped<LogUserActivity>();
             serviceCollection.AddSingleton<PresenceTracker>();
 
